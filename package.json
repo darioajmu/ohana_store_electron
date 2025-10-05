@@ -2,10 +2,14 @@
   "name": "ohana_shop_electron",
   "version": "1.0.0",
   "description": "ohana shop, now on electron!",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
+    "start": "electron .",
     "test": "test"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^38.2.1"
+  }
 }
