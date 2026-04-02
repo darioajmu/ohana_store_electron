@@ -53,6 +53,18 @@ En este modo:
 - Electron arranca el backend localmente
 - el frontend se sirve en desarrollo desde `http://127.0.0.1:3002`
 
+## Comandos desktop
+
+- `yarn desktop:prepare-runtime`: prepara el runtime Ruby embebido en `tmp/desktop-runtime`
+- `yarn desktop:dev`: abre la app con Electron en modo desarrollo
+- `yarn desktop:build`: genera el frontend desktop y prepara el runtime Ruby
+- `yarn desktop:dist`: crea una build empaquetada usando la configuracion general de `electron-builder`
+- `yarn desktop:dist:dir`: crea el bundle desempaquetado para pruebas locales
+- `yarn desktop:dist:dir:mac:arm64`: crea un bundle desempaquetado para macOS Apple Silicon
+- `yarn desktop:dist:dir:mac:x64`: crea un bundle desempaquetado para macOS Intel
+- `yarn desktop:dist:mac:arm64`: crea una build empaquetada para macOS Apple Silicon
+- `yarn desktop:dist:mac:x64`: crea una build empaquetada para macOS Intel
+
 ## Build desktop
 
 Prepara el frontend y el runtime Ruby:
@@ -71,6 +83,15 @@ Si solo quieres el bundle desempaquetado para probarlo localmente:
 
 ```bash
 yarn desktop:dist:dir
+```
+
+Builds especificas de macOS:
+
+```bash
+yarn desktop:dist:dir:mac:arm64
+yarn desktop:dist:dir:mac:x64
+yarn desktop:dist:mac:arm64
+yarn desktop:dist:mac:x64
 ```
 
 ## Runtime local
@@ -97,15 +118,26 @@ Variables soportadas para firma y notarizacion:
 - `APPLE_APP_SPECIFIC_PASSWORD`
 - `APPLE_TEAM_ID`
 
+Arquitecturas soportadas:
+
+- `arm64` para Macs con Apple Silicon
+- `x64` para Macs Intel
+
+La arquitectura de la build debe coincidir con la del Mac donde se va a ejecutar.
+
+Importante: el runtime Ruby embebido tambien queda ligado a la arquitectura con la que se prepara. Lo mas fiable es generar la build `arm64` en un Mac Apple Silicon y la build `x64` en un Mac Intel, o al menos con un Ruby de esa misma arquitectura.
+
 Para probar la app en otro Mac sin distribuirla oficialmente:
 
 ```bash
-yarn desktop:dist:dir
+yarn desktop:dist:dir:mac:arm64
 ```
 
 Luego copia:
 
 `dist/mac-arm64/Ohana Store.app`
+
+Si el Mac destino es Intel, genera y copia la variante `x64`.
 
 En algunos equipos puede hacer falta abrirla con clic derecho -> `Abrir` o permitirla desde `Privacy & Security`.
 

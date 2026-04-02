@@ -13,7 +13,11 @@
     "desktop:dev": "electron .",
     "desktop:build": "yarn frontend:build:desktop && yarn desktop:prepare-runtime",
     "desktop:dist": "yarn desktop:build && electron-builder --config electron-builder.config.js",
-    "desktop:dist:dir": "yarn desktop:build && electron-builder --dir --config electron-builder.config.js"
+    "desktop:dist:dir": "yarn desktop:build && electron-builder --dir --config electron-builder.config.js",
+    "desktop:dist:dir:mac:arm64": "yarn desktop:build && electron-builder --dir --mac --arm64 --config electron-builder.config.js",
+    "desktop:dist:dir:mac:x64": "yarn desktop:build && electron-builder --dir --mac --x64 --config electron-builder.config.js",
+    "desktop:dist:mac:arm64": "yarn desktop:build && electron-builder --mac --arm64 --config electron-builder.config.js",
+    "desktop:dist:mac:x64": "yarn desktop:build && electron-builder --mac --x64 --config electron-builder.config.js"
   },
   "dependencies": {
     "@nextui-org/image": "^2.0.24",
