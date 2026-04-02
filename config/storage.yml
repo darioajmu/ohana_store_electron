@@ -1,0 +1,13 @@
+test:
+  service: Disk
+  root: <%= Rails.root.join("tmp/storage") %>
+
+local:
+  service: Disk
+  root: <%= Rails.root.join("storage") %>
+  public: true
+
+desktop_local:
+  service: Disk
+  root: <%= ENV.fetch("OHANA_DESKTOP_STORAGE_PATH") { Rails.root.join("storage", "desktop") } %>
+  public: true
