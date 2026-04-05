@@ -6,4 +6,6 @@ export interface ProductEntity {
   price_tikis: number;
   photo_url: string | undefined;
   stockable: boolean;
+  available_stock: number;
+  available_for_sale: boolean;
 }

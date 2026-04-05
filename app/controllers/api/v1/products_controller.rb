@@ -9,6 +9,19 @@ module Api
         render json: { data: @products }
       end
 
+      def sold
+        start_date = parse_date(params[:start_date])
+        end_date = parse_date(params[:end_date])
+
+        if start_date.blank? || end_date.blank?
+          render json: { error: 'start_date y end_date son obligatorios' }, status: :unprocessable_entity
+          return
+        end
+
+        rows = products_sold_rows(start_date, end_date)
+        render json: rows.map { |product_name, quantity_sold| { product_name: product_name, quantity: quantity_sold } }
+      end
+
       # GET /api/v1/products/1
       def show
         render json: @product
@@ -41,6 +54,24 @@ module Api
       end
 
       private
+        def products_sold_rows(start_date, end_date)
+          Ticket
+            .joins(:order, :product)
+            .where(orders: { date: start_date..end_date })
+            .group('tickets.product_id', 'products.name')
+            .order(Arel.sql('SUM(tickets.quantity) DESC'), 'products.name ASC')
+            .pluck(
+              'products.name',
+              Arel.sql('SUM(tickets.quantity)')
+            )
+        end
+
+        def parse_date(value)
+          Date.iso8601(value.to_s)
+        rescue ArgumentError
+          nil
+        end
+
         # Use callbacks to share common setup or constraints between actions.
         def set_product
           @product = Product.find(params[:id])

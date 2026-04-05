@@ -2,7 +2,7 @@ import { FC } from 'react';
 import ProductsList from './ProductsList';
 
 interface ProductProps {
-  onProductPress: any;
+  onProductPress: (product: any) => void;
   filteredItems: any;
 }
 

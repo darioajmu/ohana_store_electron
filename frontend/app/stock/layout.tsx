@@ -1,6 +1,4 @@
-import type { ReactNode } from 'react';
-
-export default function StockLayout({ children }: { children: ReactNode }) {
+export default function StockLayout({ children }: { children: React.ReactNode }) {
   return (
     <section>
       <div>{children}</div>

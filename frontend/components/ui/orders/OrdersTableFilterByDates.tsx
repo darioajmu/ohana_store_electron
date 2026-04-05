@@ -1,27 +1,30 @@
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { DatePickerInput } from '@mantine/dates';
 import { useAppContext } from '../../../contexts/AppContext';
+import { datePickerInputStyles } from '../../../shared/styles/datePickerInputStyles';
 
 const OrdersTableFilterByDates = () => {
   const { startDate, setStartDate, endDate, setEndDate } = useAppContext();
 
-  const handleChange = (range: any) => {
+  const handleChange = (range: [Date | null, Date | null]) => {
     const [rangeStartDate, rangeEndDate] = range;
     setStartDate(rangeStartDate);
     setEndDate(rangeEndDate);
   };
 
   return (
-    <DatePicker
-      selected={startDate}
+    <DatePickerInput
+      className='w-full max-w-xs sm:min-w-[22rem]'
+      clearable
+      dropdownType='popover'
+      firstDayOfWeek={1}
+      locale='es'
+      placeholder='Filtrar por fechas'
+      popoverProps={{ zIndex: 1000 }}
+      styles={datePickerInputStyles}
+      type='range'
+      value={[startDate ?? null, endDate ?? null]}
+      valueFormat='DD/MM/YYYY'
       onChange={handleChange}
-      startDate={startDate}
-      endDate={endDate}
-      selectsRange
-      isClearable
-      dateFormat={'dd/MM/YYYY'}
-      className={'h-12 px-3 py-1 shadow-sm'}
-      showIcon
     />
   );
 };

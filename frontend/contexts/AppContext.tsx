@@ -11,8 +11,6 @@ interface AppContextProps {
   setMemberValue: any;
   products: any;
   setProducts: any;
-  debtorName: any;
-  setDebtorName: any;
   payNow: any;
   setPayNow: any;
   payWithValue: any;
@@ -20,11 +18,14 @@ interface AppContextProps {
   stockableValue: any;
   setStockableValue: any;
   onStockableCheckboxChange: any;
+  getTotalValue: any;
   calculateTotal: any;
   payWithTikisValue: any;
   setPayWithTikisValue: any;
   nameFilterValue: any;
   setNameFilterValue: any;
+  newNameFilterValue: any;
+  setNewNameFilterValue: any;
   startDate: any;
   setStartDate: any;
   endDate: any;
@@ -57,20 +58,21 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
   const [totalValue, setTotalValue] = useState(0);
   const [memberValue, setMemberValue] = useState(false);
   const [products, setProducts] = useState<ProductEntity[]>([]);
-  const [debtorName, setDebtorName] = useState('');
   const [payNow, setPayNow] = useState(false);
   const [payWithValue, setPayWithValue] = useState(0);
   const [stockableValue, setStockableValue] = useState<any>(() => false);
   const [payWithTikisValue, setPayWithTikisValue] = useState<any>(() => false);
   const [nameFilterValue, setNameFilterValue] = useState('');
+  const [newNameFilterValue, setNewNameFilterValue] = useState('');
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('false');
   const [orders, setOrders] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const hasNameSearchFilter = Boolean(nameFilterValue);
+  const hasNewNameSearchFilter = Boolean(newNameFilterValue);
   const hasDateSearchFilter = startDate && endDate;
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
     column: 'date',
@@ -93,6 +95,14 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
       });
     }
 
+    if (hasNewNameSearchFilter) {
+      filteredOrders = filteredOrders.filter((order) => {
+        if (!order.user_name) return false;
+
+        return order.user_name.toLowerCase().includes(newNameFilterValue.toLowerCase());
+      });
+    }
+
     if (hasDateSearchFilter) {
       filteredOrders = filteredOrders.filter((order) => {
         const valid =
@@ -103,18 +113,20 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
       });
     }
 
-    if (statusFilter !== 'all' && Array.from(statusFilter).length !== statusOptions.length) {
-      filteredOrders = filteredOrders.filter((order) => Array.from(statusFilter).includes(String(order.paid)));
+    if (statusFilter !== 'all') {
+      filteredOrders = filteredOrders.filter((order) => String(order.paid) === statusFilter);
     }
 
     return filteredOrders;
   }, [
     orders,
     hasNameSearchFilter,
+    hasNewNameSearchFilter,
     hasDateSearchFilter,
     statusFilter,
     statusOptions.length,
     nameFilterValue,
+    newNameFilterValue,
     startDate,
     endDate,
   ]);
@@ -124,6 +136,10 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
   const sortedItems = useMemo(() => {
     let first: any, second: any;
     return [...filteredItems].sort((a: any, b: any) => {
+      if (sortDescriptor.column === 'date' && a.date === b.date && a.paid !== b.paid) {
+        return a.paid ? 1 : -1;
+      }
+
       if (sortDescriptor.column == 'total') {
         first = Number(a[sortDescriptor.column]);
         second = Number(b[sortDescriptor.column]);
@@ -148,14 +164,14 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
     setStockableValue(value.target.checked);
   };
 
-  const calculateTotal = (membership: boolean): void => {
-    let temporaryTotal = 0;
-      const field = membership ? 'price_members' : 'price';
-      ticketElements.forEach((ticketElement: any) => {
-        temporaryTotal += Number(ticketElement[field]) * ticketElement.quantity;
-      });
+  const getTotalValue = (elements: any[], membership: boolean): number => {
+    return elements.reduce((temporaryTotal: number, ticketElement: any) => {
+      return temporaryTotal + Number(ticketElement.price) * ticketElement.quantity;
+    }, 0);
+  };
 
-    setTotalValue(temporaryTotal);
+  const calculateTotal = (membership: boolean): void => {
+    setTotalValue(getTotalValue(ticketElements, membership));
   };
 
   const calculateRest = (value: any): number => {
@@ -177,8 +193,6 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
         setMemberValue,
         products,
         setProducts,
-        debtorName,
-        setDebtorName,
         payNow,
         setPayNow,
         payWithValue,
@@ -186,11 +200,14 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ children }) =>
         stockableValue,
         setStockableValue,
         onStockableCheckboxChange,
+        getTotalValue,
         calculateTotal,
         payWithTikisValue,
         setPayWithTikisValue,
         nameFilterValue,
         setNameFilterValue,
+        newNameFilterValue,
+        setNewNameFilterValue,
         startDate,
         setStartDate,
         endDate,

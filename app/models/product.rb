@@ -5,6 +5,8 @@ class Product < ApplicationRecord
             :name,
             presence: :true
   attribute :photo_url
+  attribute :available_stock
+  attribute :available_for_sale
 
   has_many :tickets
   has_one_attached :photo
@@ -14,9 +16,9 @@ class Product < ApplicationRecord
 
   def self.with_photo_url
     all.each do |product|
-      product['photo_url'] = if product.photo.attached?
-                               Rails.application.routes.url_helpers.url_for(product.photo)
-                             end
+      product['photo_url'] = Rails.application.routes.url_helpers.url_for(product.photo)
+      product['available_stock'] = product.product_quantity&.quantity || 0
+      product['available_for_sale'] = !product.stockable? || product.product_quantity&.quantity.to_i > 0
     end
   end
 

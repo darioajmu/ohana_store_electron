@@ -64,6 +64,10 @@ const CreateProductDialog = () => {
     setPriceMembersValue(value);
   };
 
+  const handlePriceTikisChange = (value: string): void => {
+    setPriceTikisValue(value);
+  };
+
   const handlePhotoChange = (file: any) => {
     const formData = new FormData();
     formData.append('input', file);

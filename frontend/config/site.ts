@@ -15,7 +15,15 @@ export const siteConfig = {
     {
       label: 'Historico',
       href: '/orders',
-    }
+    },
+    {
+      label: 'Usuarios',
+      href: '/users',
+    },
+    {
+      label: 'Venta de productos',
+      href: '/products',
+    },
   ],
   navMenuItems: [],
 };

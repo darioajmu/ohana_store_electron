@@ -21,7 +21,7 @@ import { useAppContext } from '../../../contexts/AppContext';
 import { toast } from 'react-toastify';
 
 interface ProductCardsProps {
-  onProductPress: any;
+  onProductPress: (product: any) => void;
   product: ProductEntity;
 }
 
@@ -31,17 +31,21 @@ const ProductCard: FC<ProductCardsProps> = (props: ProductCardsProps) => {
   const [priceTikisValue, setPriceTikisValue] = useState(() => String(props.product.price_tikis));
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const {
+    ticketElements,
     setProducts,
     setTicketElements,
     setMemberValue,
     setTotalValue,
-    setDebtorName,
     setPayNow,
     setPayWithValue,
     stockableValue,
     setStockableValue,
     onStockableCheckboxChange,
   } = useAppContext();
+  const quantityInCart = ticketElements.find((ticketElement: any) => ticketElement.product_id === props.product.id)?.quantity || 0;
+  const isAvailableForSale = props.product.available_for_sale;
+  const canAddProduct = !props.product.stockable || quantityInCart < props.product.available_stock;
+  const isAddDisabled = !isAvailableForSale || !canAddProduct;
 
   const handlePriceChange = (value: string): void => {
     setPriceValue(value);
@@ -66,7 +70,6 @@ const ProductCard: FC<ProductCardsProps> = (props: ProductCardsProps) => {
     setTicketElements([]);
     setTotalValue(0);
     setMemberValue(false);
-    setDebtorName('');
     setPayNow(false);
     setPayWithValue(0);
     setStockableValue(false);
@@ -90,7 +93,10 @@ const ProductCard: FC<ProductCardsProps> = (props: ProductCardsProps) => {
   return (
     <>
       <Card shadow='sm' key={props.product.name}>
-        <CardBody className='overflow-visible p-0' onClick={() => props.onProductPress(props.product)}>
+        <CardBody
+          className={`overflow-visible p-0 ${isAddDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+          onClick={() => !isAddDisabled && props.onProductPress(props.product)}
+        >
           <Image
             shadow='sm'
             radius='lg'
@@ -112,19 +118,16 @@ const ProductCard: FC<ProductCardsProps> = (props: ProductCardsProps) => {
           <p>Asociados:</p>
           <p className='text-default-500'>{currencyFormat(props.product.price_members)}</p>
         </CardFooter>
-        {/* <CardFooter className='text-small justify-between'>
-          <p>Tikis:</p>
-          <p className='text-default-500'>{props.product.price_tikis}</p>
-        </CardFooter> */}
         <CardFooter className='text-small justify-between'>
           <Button
             fullWidth
             className='mx-1 '
             color='primary'
             size='sm'
+            isDisabled={isAddDisabled}
             onClick={() => props.onProductPress(props.product)}
           >
-            Añadir
+            {isAddDisabled ? 'Sin stock' : 'Añadir'}
           </Button>
           <Button fullWidth color='primary' size='sm' onPress={onOpen}>
             Editar

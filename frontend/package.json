@@ -4,14 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "PORT=3002 next dev",
-    "dev:desktop": "NEXT_PUBLIC_IS_DESKTOP=true PORT=3002 next dev",
     "build": "next build",
-    "build:desktop": "NEXT_PUBLIC_IS_DESKTOP=true next build",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier src/**/*.js --write. --config ./.prettierrc"
   },
   "dependencies": {
+    "@mantine/core": "7",
+    "@mantine/dates": "7",
+    "@mantine/hooks": "7",
     "@nextui-org/button": "2.0.26",
     "@nextui-org/card": "^2.0.24",
     "@nextui-org/code": "2.0.24",
@@ -35,6 +36,7 @@
     "autoprefixer": "10.4.16",
     "axios": "^1.6.7",
     "clsx": "^2.0.0",
+    "dayjs": "^1.11.20",
     "eslint": "^8.0.1",
     "eslint-config-next": "14.1.0",
     "eslint-config-prettier": "^9.1.0",

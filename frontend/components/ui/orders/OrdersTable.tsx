@@ -27,22 +27,31 @@ const statusColorMap: Record<string, ChipProps['color']> = {
 const OrdersTable = () => {
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
-  const { setOrders, sortDescriptor, setSortDescriptor, items } = useAppContext();
+  const { setOrders, sortDescriptor, setSortDescriptor, items, statusFilter, filteredItems } = useAppContext();
 
   useEffect(() => {
-    const { getOrders } = orderRequests();
+    const { getOrders, getPaidOrders, getNotPaidOrders } = orderRequests();
 
     const fetchData = async () => {
-      const response = await getOrders();
+      let response;
+
+      if (statusFilter === 'true') {
+        response = await getPaidOrders();
+      } else if (statusFilter === 'false') {
+        response = await getNotPaidOrders();
+      } else {
+        response = await getOrders();
+      }
 
       setOrders(response);
     };
     fetchData();
-  }, [setOrders]);
+  }, [setOrders, statusFilter]);
 
   const columns = [
     { name: 'Fecha', uid: 'date', sortable: true },
     { name: 'Nombre', uid: 'debtor_name', sortable: true },
+    { name: 'Nombre (Nuevo)', uid: 'user_name', sortable: true },
     { name: 'Total', uid: 'total', sortable: true },
     { name: 'Estado', uid: 'paid', sortable: true },
     { name: 'Acciones', uid: 'actions' },
@@ -54,6 +63,17 @@ const OrdersTable = () => {
     return 'Pendiente';
   };
 
+  const selectedOrders =
+    selectedKeys === 'all'
+      ? filteredItems.filter((item: any) => !item.paid)
+      : filteredItems.filter((item: any) => Array.from((selectedKeys as Iterable<any>) || []).includes(String(item.id)) && !item.paid);
+
+  const disabledKeys = filteredItems.filter((item: any) => item.paid).map((item: any) => String(item.id));
+
+  const clearSelection = () => {
+    setSelectedKeys(new Set([]));
+  };
+
   return (
     <Table
       aria-label='Tabla con orden, busqueda y filtro'
@@ -63,10 +83,12 @@ const OrdersTable = () => {
       onSelectionChange={setSelectedKeys}
       onSortChange={setSortDescriptor}
       isStriped
+      disabledKeys={disabledKeys}
+      selectionMode='multiple'
       selectedKeys={selectedKeys}
       sortDescriptor={sortDescriptor}
-      bottomContent={<OrdersTableBottomContent />}
-      topContent={<OrdersTableTopContent />}
+      bottomContent={<OrdersTableBottomContent selectedOrders={selectedOrders} onPaidSuccess={clearSelection} />}
+      topContent={<OrdersTableTopContent selectedOrders={selectedOrders} onPaidSuccess={clearSelection} />}
     >
       <TableHeader columns={columns}>
         {(column: any) => (
@@ -80,6 +102,7 @@ const OrdersTable = () => {
           <TableRow key={item.id}>
             <TableCell>{item.date}</TableCell>
             <TableCell>{item.debtor_name}</TableCell>
+            <TableCell>{item.user_name}</TableCell>
             <TableCell>{currencyFormat(item.total)}</TableCell>
             <TableCell>
               <Chip className='capitalize' color={statusColorMap[item.paid]} size='sm' variant='flat'>
@@ -87,7 +110,7 @@ const OrdersTable = () => {
               </Chip>
             </TableCell>
             <TableCell>
-              <OrdersTableActionsRow item={item} />
+              <OrdersTableActionsRow item={item} onPaidSuccess={clearSelection} />
             </TableCell>
           </TableRow>
         )}

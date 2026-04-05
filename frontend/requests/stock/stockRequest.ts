@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { getApiBaseUrl } from '../../shared/config/runtime';
 
-const STOCK_PATH = `${getApiBaseUrl()}/api/v1/product_quantities`
+const STOCK_PATH = 'http://localhost:3000/api/v1/product_quantities'
 
 interface stockService {
   getStock: () => Promise<any[]>;

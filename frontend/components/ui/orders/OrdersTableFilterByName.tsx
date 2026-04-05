@@ -1,5 +1,4 @@
 import { Input } from '@nextui-org/react';
-import { SearchIcon } from '../../icons';
 import { useAppContext } from '../../../contexts/AppContext';
 
 const OrdersTableFilterByName = () => {
@@ -16,17 +15,13 @@ const OrdersTableFilterByName = () => {
 
   return (
     <Input
+      className='max-w-xs'
       isClearable
-      classNames={{
-        base: 'sm:max-w-[20%]',
-      }}
-      placeholder='Filtrar por nombre...'
-      startContent={<SearchIcon />}
+      classNames={{ inputWrapper: 'h-14 min-h-14' }}
+      label='Buscar por nombre'
       value={nameFilterValue}
-      size='sm'
-      variant='underlined'
-      onClear={() => onNameSearchChange()}
       onValueChange={onNameSearchChange}
+      onClear={() => onNameSearchChange()}
     />
   );
 };

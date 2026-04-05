@@ -1,5 +1,5 @@
 class TicketSerializer < ActiveModel::Serializer
-  attributes :quantity, :product_name, :price, :total
+  attributes :product_id, :quantity, :product_name, :price, :total, :stockable, :available_stock
 
   belongs_to :product
 
@@ -9,5 +9,15 @@ class TicketSerializer < ActiveModel::Serializer
 
   def total
     object.price * object.quantity if object.product
+  end
+
+  def stockable
+    object.product&.stockable || false
+  end
+
+  def available_stock
+    return 0 unless object.product&.stockable
+
+    object.product.product_quantity&.quantity.to_i + object.quantity.to_i
   end
 end

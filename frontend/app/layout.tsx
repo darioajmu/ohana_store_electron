@@ -1,5 +1,6 @@
 import '@/styles/globals.css';
-import type { ReactNode } from 'react';
+import '@mantine/core/styles.css';
+import '@mantine/dates/styles.css';
 import { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
 import { fontSans } from '@/config/fonts';
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang='en' suppressHydrationWarning>
       <head />

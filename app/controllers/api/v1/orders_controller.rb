@@ -1,12 +1,21 @@
 module Api
   module V1
     class OrdersController < ApplicationController
-      before_action :set_order, only: [:update]
-      before_action :set_tickets_price, only: [:create]
+      before_action :set_order, only: [:update, :update_pending_items]
 
       # GET /api/v1/orders
       def index
-        @orders = Order.includes(tickets: :product).all
+        @orders = Order.includes(:user, tickets: :product).all
+        render json: @orders, each_serializer: OrderSerializer
+      end
+
+      def paid
+        @orders = Order.includes(:user, tickets: :product).where(paid: true)
+        render json: @orders, each_serializer: OrderSerializer
+      end
+
+      def not_paid
+        @orders = Order.includes(:user, tickets: :product).where(paid: false)
         render json: @orders, each_serializer: OrderSerializer
       end
 
@@ -14,7 +23,7 @@ module Api
       def create
         @order = Order.create_or_update_order(order_params)
 
-        if @order.save
+        if @order.errors.empty?
           render json: @order, status: :created
         else
           render json: @order.errors, status: :unprocessable_entity
@@ -30,23 +39,29 @@ module Api
         end
       end
 
+      def update_pending_items
+        @order.update_pending_items(update_pending_items_params[:tickets_attributes] || [])
+
+        if @order.errors.empty?
+          render json: @order.reload, serializer: OrderSerializer
+        else
+          render json: @order.errors, status: :unprocessable_entity
+        end
+      end
+
       private
         # Use callbacks to share common setup or constraints between actions.
         def set_order
           @order = Order.find(params[:id])
         end
 
-        def set_tickets_price
-          if params[:order][:member]
-            params[:order][:tickets_attributes].each do |ticket_attributes|
-              ticket_attributes[:price] = ticket_attributes[:price_members]
-            end
-          end
-        end
-
         # Only allow a trusted parameter "white list" through.
         def order_params
-          params.require(:order).permit(:total, :paid, :debtor_name, :date, tickets_attributes: [:quantity, :product_id, :price])
+          params.require(:order).permit(:total, :paid, :date, :user_id, tickets_attributes: [:quantity, :product_id, :price])
+        end
+
+        def update_pending_items_params
+          params.require(:order).permit(tickets_attributes: [:quantity, :product_id, :price])
         end
     end
   end

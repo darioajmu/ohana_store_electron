@@ -8,6 +8,7 @@ import { productRequests } from '../../../requests/product/productRequests';
 import { Input, Spinner } from '@nextui-org/react';
 import { SearchIcon } from '../../icons';
 import { useAppContext } from '../../../contexts/AppContext';
+import { toast } from 'react-toastify';
 
 const App = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -49,7 +50,17 @@ const App = () => {
   }, [setProducts]);
 
   const onProductPress = (product: any) => {
+    if (!product.available_for_sale) return;
+
     const ticketElement = ticketElements.find((ticketElement: any) => ticketElement.product_id === product.id);
+    const quantityInCart = ticketElement?.quantity || 0;
+
+    if (product.stockable && quantityInCart >= product.available_stock) {
+      toast.error('No puedes anadir mas unidades porque no hay stock suficiente');
+      return;
+    }
+
+    const defaultPrice = memberValue ? Number(product.price_members) : Number(product.price);
 
     if (ticketElement) {
       ticketElement.quantity++;
@@ -57,8 +68,11 @@ const App = () => {
       ticketElements.push({
         product_id: product.id,
         name: product.name,
-        price: product.price,
+        base_price: product.price,
+        price: defaultPrice,
         price_members: product.price_members,
+        stockable: product.stockable,
+        available_stock: product.available_stock,
         quantity: 1,
       });
     }

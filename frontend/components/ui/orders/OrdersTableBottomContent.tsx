@@ -1,10 +1,16 @@
 'use client';
 
+import OrdersTablePayDialog from './OrdersTablePayDialog';
 import { Pagination } from '@nextui-org/react';
 import { ChangeEvent } from 'react';
 import { useAppContext } from '../../../contexts/AppContext';
 
-const OrdersTableBottomContent = () => {
+interface OrdersTableBottomContentProps {
+  onPaidSuccess?: () => void;
+  selectedOrders: any[];
+}
+
+const OrdersTableBottomContent = (props: OrdersTableBottomContentProps) => {
   const { page, setPage, pages, setRowsPerPage } = useAppContext();
 
   const onRowsPerPageChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -14,6 +20,11 @@ const OrdersTableBottomContent = () => {
 
   return (
     <div>
+      {props.selectedOrders.length ? (
+        <div className='px-2 pb-2 flex justify-start'>
+          <OrdersTablePayDialog buttonLabel='Pagar seleccionadas' items={props.selectedOrders} onPaidSuccess={props.onPaidSuccess} />
+        </div>
+      ) : null}
       <div className='py-2 px-2 justify-center flex items-center'>
         <Pagination isCompact showControls showShadow color='primary' page={page} total={pages} onChange={setPage} />
       </div>

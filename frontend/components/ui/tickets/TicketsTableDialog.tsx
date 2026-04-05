@@ -1,13 +1,14 @@
 import { Button, Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from '@nextui-org/react';
 import { FC } from 'react';
-import TicketsTable from './TicketsTable';
+import EditPendingOrderTickets from './EditPendingOrderTickets';
 
 interface TicketsTableDialogProps {
   item: any;
 }
 
 const TicketsTableDialog: FC<TicketsTableDialogProps> = (props: TicketsTableDialogProps) => {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+
   return (
     <>
       <Button color='primary' onPress={onOpen} className='mr-2'>
@@ -15,9 +16,16 @@ const TicketsTableDialog: FC<TicketsTableDialogProps> = (props: TicketsTableDial
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size='5xl'>
         <ModalContent>
-          <ModalHeader className='flex flex-col gap-1'>Tickets</ModalHeader>
+          <ModalHeader className='flex flex-col gap-1'>{props.item.paid ? 'Tickets' : 'Editar compra'}</ModalHeader>
           <ModalBody>
-            <TicketsTable order={props.item} />
+            <EditPendingOrderTickets
+              order={props.item}
+              readOnly={props.item.paid}
+              onCancel={onClose}
+              onOrderUpdated={() => {
+                onClose();
+              }}
+            />
           </ModalBody>
         </ModalContent>
       </Modal>

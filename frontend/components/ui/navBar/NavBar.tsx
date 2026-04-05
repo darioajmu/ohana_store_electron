@@ -1,3 +1,5 @@
+'use client';
+
 import { Navbar as NextUINavbar, NavbarContent, NavbarBrand, NavbarItem } from '@nextui-org/navbar';
 import NextLink from 'next/link';
 import { siteConfig } from '../../../config/site';
@@ -12,7 +14,7 @@ const NavBar = () => {
       <NavbarContent className='basis-1/5 sm:basis-full' justify='start'>
         <NavbarBrand as='li' className='gap-3 max-w-fit'>
           <NextLink className='flex justify-start items-center gap-1' href='/'>
-            <Image src={ohanaLogo.src} alt='ohana logo' width={35} height={35} />
+            <Image src={ohanaLogo.src} alt='ohana logo' width={35} height={35} style={{ width: 'auto', height: 'auto' }} />
             <p className='font-bold text-inherit'>Ohana Motorcycles</p>
           </NextLink>
         </NavbarBrand>

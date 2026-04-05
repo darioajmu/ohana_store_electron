@@ -1,6 +1,4 @@
-import type { ReactNode } from 'react';
-
-export default function OrdersLayout({ children }: { children: ReactNode }) {
+export default function OrdersLayout({ children }: { children: React.ReactNode }) {
   return (
     <section>
       <div>{children}</div>

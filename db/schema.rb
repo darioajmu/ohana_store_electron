@@ -10,8 +10,8 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_02_152740) do
-  create_table "active_storage_attachments", force: :cascade do |t|
+ActiveRecord::Schema[7.1].define(version: 2026_04_05_203000) do
+  create_table "active_storage_attachments", charset: "utf8mb3", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
     t.bigint "record_id", null: false
@@ -21,7 +21,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_02_152740) do
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
-  create_table "active_storage_blobs", force: :cascade do |t|
+  create_table "active_storage_blobs", charset: "utf8mb3", force: :cascade do |t|
     t.string "key", null: false
     t.string "filename", null: false
     t.string "content_type"
@@ -33,29 +33,31 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_02_152740) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
-  create_table "active_storage_variant_records", force: :cascade do |t|
+  create_table "active_storage_variant_records", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "orders", force: :cascade do |t|
+  create_table "orders", charset: "utf8mb3", force: :cascade do |t|
     t.decimal "total", precision: 8, scale: 2
     t.boolean "paid"
     t.string "debtor_name"
     t.date "date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
-  create_table "product_quantities", force: :cascade do |t|
+  create_table "product_quantities", charset: "utf8mb3", force: :cascade do |t|
     t.integer "product_id"
     t.integer "quantity"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "products", force: :cascade do |t|
+  create_table "products", charset: "utf8mb3", force: :cascade do |t|
     t.string "name"
     t.decimal "price", precision: 8, scale: 2
     t.decimal "price_members", precision: 8, scale: 2
@@ -65,9 +67,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_02_152740) do
     t.integer "price_tikis"
   end
 
-  create_table "tickets", force: :cascade do |t|
-    t.integer "order_id", null: false
-    t.integer "product_id", null: false
+  create_table "tickets", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "order_id", null: false
+    t.bigint "product_id", null: false
     t.integer "quantity"
     t.decimal "price", precision: 8, scale: 2
     t.datetime "created_at", null: false
@@ -76,8 +78,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_02_152740) do
     t.index ["product_id"], name: "index_tickets_on_product_id"
   end
 
+  create_table "users", charset: "utf8mb3", force: :cascade do |t|
+    t.string "name", null: false
+    t.boolean "member", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "disabled", default: false, null: false
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "orders", "users"
   add_foreign_key "product_quantities", "products", column: "id"
   add_foreign_key "tickets", "orders"
   add_foreign_key "tickets", "products"
